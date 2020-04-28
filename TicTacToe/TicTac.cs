@@ -96,6 +96,7 @@ namespace TicTacToe
                     if (tileValues[i] != BoxState.cross)
                     {
                         this.GameState = true;
+                        foundPattern = false;
                         break;
                     }
 
@@ -113,6 +114,38 @@ namespace TicTacToe
                 temp2 += 2 + 1;
             }
 
+            if (foundPattern) return; ///
+
+            temp = 6;
+            temp2 = 0;
+            var temp3 = temp2;
+
+            for (var j = 0; j < this.maxcolSize; ++j)
+            {
+                for (var i = temp2; i <= temp; i += 3)
+                {
+                    if (tileValues[i] != BoxState.cross)
+                    {
+                        this.GameState = true;
+                        foundPattern = false;
+                        break;
+                    }
+
+                    else if (tileValues[i] == BoxState.cross)
+                    {
+                        this.GameState = false;
+                        foundPattern = true;
+                    }
+                }
+
+                if (foundPattern)
+                    break;
+
+                temp += 1;
+                temp3 += 1;
+                temp2 = temp3;
+            }
+            if (foundPattern) return; ///
 
         }
         #endregion
