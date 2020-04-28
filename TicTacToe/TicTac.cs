@@ -111,22 +111,25 @@ namespace TicTacToe
 
         public void getWinner()
         {
-            BoxState tempstate = BoxState.cross;
-            getwin(tempstate);
-
             if (this.GameState != false)
             {
-                tempstate = BoxState.zero;
-                getwin(BoxState.zero);
-            }
+                BoxState tempstate = BoxState.cross;
+                getwin(tempstate);
 
-            if (foundPattern)
-            {
-                if (tempstate == BoxState.cross)
-                    winner = IdentifyWinner.player;
+                if (this.GameState != false)
+                {
+                    tempstate = BoxState.zero;
+                    getwin(BoxState.zero);
+                }
 
-                else if (tempstate == BoxState.zero)
-                    winner = IdentifyWinner.computer;
+                if (foundPattern)
+                {
+                    if (tempstate == BoxState.cross)
+                        winner = IdentifyWinner.player;
+
+                    else if (tempstate == BoxState.zero)
+                        winner = IdentifyWinner.computer;
+                }
             }
 
         }
