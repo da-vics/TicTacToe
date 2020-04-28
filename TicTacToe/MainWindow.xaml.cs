@@ -36,7 +36,6 @@ namespace TicTacToe
 
             Container.Children.Cast<Button>().ToList().ForEach(button =>
             {
-
                 button.Content = string.Empty;
                 button.Background = Brushes.White;
                 button.Foreground = Brushes.Blue;
@@ -78,7 +77,6 @@ namespace TicTacToe
 
             if (!ticTac.PlayerState && ticTac.GameState)
             {
-
                 var btn = Container.Children.Cast<Button>().ToArray();
                 var index = ticTac.computerPlay();
                 btn[index].Content = "O";
@@ -89,14 +87,30 @@ namespace TicTacToe
 
             ticTac.getWinner();
 
-            if (!ticTac.GameState)
+            if (ticTac.GameState != true)
             {
-                Container.Children.Cast<Button>().ToList().ForEach(button =>
+                ///MessageBox.Show(ticTac.winner.ToString());
+                if (ticTac.winner == TicTac.IdentifyWinner.stalemate)
                 {
-                    button.Background = Brushes.Gold;
-                    button.Foreground = Brushes.Black;
+                    Container.Children.Cast<Button>().ToList().ForEach(button =>
+                    {
+                        button.Background = Brushes.Gold;
+                        button.Foreground = Brushes.Black;
 
-                });
+                    });
+                }
+
+                if (ticTac.winner == TicTac.IdentifyWinner.player || ticTac.winner == TicTac.IdentifyWinner.computer)
+                {
+                    var btn = Container.Children.Cast<Button>().ToArray();
+
+                    for (int i = 0; i < ticTac.maxRowSize; ++i)
+                    {
+                        btn[ticTac.winSegments[i]].Background = Brushes.Green;
+                    }
+                    MessageBox.Show($"{ticTac.winner.ToString()} wins GameOver");
+                }
+
             }
         }
 

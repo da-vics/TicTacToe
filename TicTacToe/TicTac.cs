@@ -11,7 +11,9 @@ namespace TicTacToe
         /// <summary>
         /// maxsize of tilevales array <see cref="tileValues"/>
         /// </summary>
-        public int maxSize { get; private set; } = 9;
+        private int maxSize { get; set; } = 9;
+
+        private bool foundPattern { get; set; } = false;
         #endregion
 
         #region publicVariables
@@ -22,6 +24,10 @@ namespace TicTacToe
         public bool PlayerState { get; set; } = true;
 
         public bool GameState { get; set; } = true;
+
+        public int[] winSegments;
+
+        public IdentifyWinner winner;
 
         /// <summary>
         /// state of gridBox
@@ -36,17 +42,31 @@ namespace TicTacToe
             zero
         }
 
+        public enum IdentifyWinner
+        {
+            NULL,
+            player,
+            computer,
+            stalemate
+        }
+
         public BoxState[] tileValues;
 
-        public TicTac() => this.tileValues = new BoxState[9];
+        public TicTac()
+        {
+            this.winSegments = new int[3] { 0, 0, 0 };
+            this.tileValues = new BoxState[9];
+            this.winner = new IdentifyWinner();
+        }
 
         public void defaultTileInit()
         {
-
             for (int i = 0; i < maxSize; ++i)
             {
                 tileValues[i] = BoxState.free;
             }
+
+            winner = IdentifyWinner.NULL;
         }
 
         public int computerPlay()
@@ -81,27 +101,55 @@ namespace TicTacToe
                 }
 
             }
+
+            if (this.GameState != true)
+            {
+                winner = IdentifyWinner.stalemate;
+            }
         }
 
 
         public void getWinner()
         {
+            BoxState tempstate = BoxState.cross;
+            getwin(tempstate);
+
+            if (this.GameState != false)
+            {
+                tempstate = BoxState.zero;
+                getwin(BoxState.zero);
+            }
+
+            if (foundPattern)
+            {
+                if (tempstate == BoxState.cross)
+                    winner = IdentifyWinner.player;
+
+                else if (tempstate == BoxState.zero)
+                    winner = IdentifyWinner.computer;
+            }
+
+        }
+
+        private void getwin(BoxState boxState)
+        {
+            var segindex = 0;
             var temp = this.maxRowSize;
             var temp2 = 0;
-            bool foundPattern = false;
             for (var j = 0; j < this.maxRowSize; ++j)
             {
                 for (var i = temp2; i < temp; ++i)
                 {
-                    if (tileValues[i] != BoxState.cross)
+                    if (tileValues[i] != boxState)
                     {
                         this.GameState = true;
                         foundPattern = false;
                         break;
                     }
 
-                    else if (tileValues[i] == BoxState.cross)
+                    else if (tileValues[i] == boxState)
                     {
+                        this.winSegments[segindex++] = i;
                         this.GameState = false;
                         foundPattern = true;
                     }
@@ -110,12 +158,14 @@ namespace TicTacToe
                 if (foundPattern)
                     break;
 
+                segindex = 0;
                 temp += this.maxRowSize;
                 temp2 += 2 + 1;
             }
 
             if (foundPattern) return; ///
 
+            segindex = 0;
             temp = 6;
             temp2 = 0;
             var temp3 = temp2;
@@ -124,15 +174,16 @@ namespace TicTacToe
             {
                 for (var i = temp2; i <= temp; i += 3)
                 {
-                    if (tileValues[i] != BoxState.cross)
+                    if (tileValues[i] != boxState)
                     {
                         this.GameState = true;
                         foundPattern = false;
                         break;
                     }
 
-                    else if (tileValues[i] == BoxState.cross)
+                    else if (tileValues[i] == boxState)
                     {
+                        this.winSegments[segindex++] = i;
                         this.GameState = false;
                         foundPattern = true;
                     }
@@ -141,13 +192,49 @@ namespace TicTacToe
                 if (foundPattern)
                     break;
 
+                segindex = 0;
                 temp += 1;
                 temp3 += 1;
                 temp2 = temp3;
             }
             if (foundPattern) return; ///
 
+
+            segindex = 0;
+            temp = 8;
+            temp2 = 0;
+            var incr = 4;
+
+            for (var j = 0; j < this.maxcolSize - 1; ++j)
+            {
+                for (var i = temp2; i <= temp; i += incr)
+                {
+                    if (tileValues[i] != boxState)
+                    {
+                        this.GameState = true;
+                        foundPattern = false;
+                        break;
+                    }
+
+                    else if (tileValues[i] == boxState)
+                    {
+                        this.winSegments[segindex++] = i;
+                        this.GameState = false;
+                        foundPattern = true;
+                    }
+                }
+
+                if (foundPattern)
+                    break;
+
+                segindex = 0;
+                temp -= 2;
+                temp2 += 2;
+                incr -= 2;
+            }
+
         }
+
         #endregion
 
     }
