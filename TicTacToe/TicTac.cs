@@ -13,7 +13,7 @@ namespace TicTacToe
         /// </summary>
         private int maxSize { get; set; } = 9;
 
-        private bool foundPattern { get; set; } = false;
+        private bool foundPattern { get; set; }
         #endregion
 
         #region publicVariables
@@ -21,9 +21,9 @@ namespace TicTacToe
         public int maxRowSize { get; private set; } = 3;
         public int maxcolSize { get; private set; } = 3;
 
-        public bool PlayerState { get; set; } = true;
+        public bool PlayerState { get; set; }
 
-        public bool GameState { get; set; } = true;
+        public bool GameState { get; private set; }
 
         public int[] winSegments;
 
@@ -57,6 +57,9 @@ namespace TicTacToe
             this.winSegments = new int[3] { 0, 0, 0 };
             this.tileValues = new BoxState[9];
             this.winner = new IdentifyWinner();
+            this.foundPattern = false;
+            this.PlayerState = true;
+            this.GameState = true;
         }
 
         public void defaultTileInit()
@@ -67,6 +70,9 @@ namespace TicTacToe
             }
 
             winner = IdentifyWinner.NULL;
+            this.foundPattern = false;
+            this.PlayerState = true;
+            this.GameState = true;
         }
 
         public int computerPlay()
@@ -88,39 +94,36 @@ namespace TicTacToe
 
         public void checkGameState()
         {
-            foreach (var tile in this.tileValues)
+            if (this.winner == IdentifyWinner.NULL)
             {
-                if (tile == TicTac.BoxState.free)
+                foreach (var tile in this.tileValues)
                 {
-                    this.GameState = true;
-                    break;
-                }
-                else
-                {
-                    this.GameState = false;
+                    if (tile == TicTac.BoxState.free)
+                    {
+                        this.GameState = true;
+                        break;
+                    }
+                    else
+                    {
+                        this.GameState = false;
+                    }
+
                 }
 
-            }
+                if (this.GameState != true)
+                {
+                    winner = IdentifyWinner.stalemate;
+                }
 
-            if (this.GameState != true)
-            {
-                winner = IdentifyWinner.stalemate;
             }
         }
 
 
-        public void getWinner()
+        public void getWinner(BoxState tempstate)
         {
             if (this.GameState != false)
             {
-                BoxState tempstate = BoxState.cross;
                 getwin(tempstate);
-
-                if (this.GameState != false)
-                {
-                    tempstate = BoxState.zero;
-                    getwin(BoxState.zero);
-                }
 
                 if (foundPattern)
                 {
@@ -130,6 +133,8 @@ namespace TicTacToe
                     else if (tempstate == BoxState.zero)
                         winner = IdentifyWinner.computer;
                 }
+
+                this.checkGameState();
             }
 
         }

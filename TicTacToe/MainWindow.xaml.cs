@@ -61,7 +61,7 @@ namespace TicTacToe
                     button.Content = 'X';
                     ticTac.PlayerState = false;
                 }
-                ticTac.checkGameState();
+                ticTac.getWinner(TicTac.BoxState.cross);
             }
 
 
@@ -69,13 +69,12 @@ namespace TicTacToe
             {
                 var btn = Container.Children.Cast<Button>().ToArray();
                 var index = ticTac.computerPlay();
-                btn[index].Content = "O";
+                btn[index].Content = 'O';
                 btn[index].Foreground = Brushes.Red;
                 ticTac.tileValues[index] = TicTac.BoxState.zero;
                 ticTac.PlayerState = true;
+                ticTac.getWinner(TicTac.BoxState.zero);
             }
-
-            ticTac.getWinner();
 
             if (ticTac.GameState != true)
             {
@@ -87,6 +86,9 @@ namespace TicTacToe
                         button.Background = Brushes.Gold;
                         button.Foreground = Brushes.Black;
                     });
+
+                    MessageBox.Show($"{ticTac.winner.ToString()}");
+                    this.newGame();
                 }
 
                 if (ticTac.winner == TicTac.IdentifyWinner.player || ticTac.winner == TicTac.IdentifyWinner.computer)
@@ -98,6 +100,7 @@ namespace TicTacToe
                         btn[ticTac.winSegments[i]].Background = Brushes.Green;
                     }
                     MessageBox.Show($"{ticTac.winner.ToString()} wins GameOver");
+                    this.newGame();
                 }
 
             }
@@ -112,7 +115,7 @@ namespace TicTacToe
             InitializeComponent();
             ticTac = new TicTac();
 
-            newGame();
+            this.newGame();
         }
 
         #endregion
