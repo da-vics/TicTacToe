@@ -16,18 +16,23 @@ namespace TicTacToe
         private bool foundPattern { get; set; }
         #endregion
 
+
+        #region publicMembers
+
         #region publicVariables
 
-        public int maxRowSize { get; private set; } = 3;
-        public int maxcolSize { get; private set; } = 3;
+        public short maxRowSize { get; private set; } = 3;
+        public short maxcolSize { get; private set; } = 3;
 
         public bool PlayerState { get; set; }
 
         public bool GameState { get; private set; }
 
-        public int[] winSegments;
+        public short[] winSegments;
 
         public IdentifyWinner winner;
+
+        #endregion
 
         /// <summary>
         /// state of gridBox
@@ -54,7 +59,7 @@ namespace TicTacToe
 
         public TicTac()
         {
-            this.winSegments = new int[3] { 0, 0, 0 };
+            this.winSegments = new short[3] { 0, 0, 0 };
             this.tileValues = new BoxState[9];
             this.winner = new IdentifyWinner();
             this.foundPattern = false;
@@ -75,10 +80,22 @@ namespace TicTacToe
             this.GameState = true;
         }
 
+
+        #region ComputerTurn
+
         public int computerPlay()
         {
 
             int index = 0;
+
+            short? val = processAI();
+
+            if (val != null)
+            {
+                index = (int)val;
+                return index;
+            }
+
 
             while (true)
             {
@@ -91,6 +108,8 @@ namespace TicTacToe
 
             return index;
         }
+
+        #endregion
 
         public void checkGameState()
         {
@@ -141,12 +160,15 @@ namespace TicTacToe
 
         private void getwin(BoxState boxState)
         {
-            var segindex = 0;
-            var temp = this.maxRowSize;
-            var temp2 = 0;
-            for (var j = 0; j < this.maxRowSize; ++j)
+
+            #region Horizontalcheck
+
+            short segindex = 0;
+            short temp = this.maxRowSize;
+            short temp2 = 0;
+            for (short j = 0; j < this.maxRowSize; ++j)
             {
-                for (var i = temp2; i < temp; ++i)
+                for (short i = temp2; i < temp; ++i)
                 {
                     if (tileValues[i] != boxState)
                     {
@@ -171,16 +193,20 @@ namespace TicTacToe
                 temp2 += 2 + 1;
             }
 
+            #endregion
+
             if (foundPattern) return; ///
 
+
+            #region VerticalCheck
             segindex = 0;
             temp = 6;
             temp2 = 0;
-            var temp3 = temp2;
+            short temp3 = temp2;
 
-            for (var j = 0; j < this.maxcolSize; ++j)
+            for (short j = 0; j < this.maxcolSize; ++j)
             {
-                for (var i = temp2; i <= temp; i += 3)
+                for (short i = temp2; i <= temp; i += 3)
                 {
                     if (tileValues[i] != boxState)
                     {
@@ -205,17 +231,22 @@ namespace TicTacToe
                 temp3 += 1;
                 temp2 = temp3;
             }
+
+            #endregion
+
             if (foundPattern) return; ///
 
+
+            #region diagonalCheck
 
             segindex = 0;
             temp = 8;
             temp2 = 0;
-            var incr = 4;
+            short incr = 4;
 
-            for (var j = 0; j < this.maxcolSize - 1; ++j)
+            for (short j = 0; j < this.maxcolSize - 1; ++j)
             {
-                for (var i = temp2; i <= temp; i += incr)
+                for (short i = temp2; i <= temp; i += incr)
                 {
                     if (tileValues[i] != boxState)
                     {
@@ -240,11 +271,128 @@ namespace TicTacToe
                 temp2 += 2;
                 incr -= 2;
             }
+            #endregion
+        }
 
+
+
+        private short? processAI()
+        {
+
+            short count = 0;
+            short? Aival = null;
+
+            #region Horizontalcheck
+
+            short temp = this.maxRowSize;
+            short temp2 = 0;
+
+            for (short j = 0; j < this.maxRowSize; ++j)
+            {
+                for (short i = temp2; i < temp; ++i)
+                {
+
+                    if (tileValues[i] == BoxState.cross)
+                    {
+                        ++count;
+                    }
+
+                    else
+                    {
+                        Aival = i;
+                    }
+                }
+
+                if (count == 2 && tileValues[(int)Aival] != BoxState.zero)
+                    break;
+
+                count = 0;
+                temp += this.maxRowSize;
+                temp2 += 2 + 1;
+            }
+
+            if (count == 2 && Aival != null) return (short)Aival;
+
+            #endregion
+
+            #region VerticalCheck
+            count = 0;
+            temp = 6;
+            temp2 = 0;
+            short temp3 = temp2;
+
+            for (short j = 0; j < this.maxcolSize; ++j)
+            {
+                for (short i = temp2; i <= temp; i += 3)
+                {
+
+                    if (tileValues[i] == BoxState.cross)
+                    {
+                        ++count;
+                    }
+
+                    else
+                    {
+                        Aival = i;
+                    }
+                }
+
+
+                if (count == 2)
+                    break;
+
+                count = 0;
+                temp += 1;
+                temp3 += 1;
+                temp2 = temp3;
+            }
+
+            if (count == 2 && Aival != null) return (short)Aival;
+
+            #endregion
+
+            #region diagonalCheck
+
+            count = 0;
+            temp = 8;
+            temp2 = 0;
+            short incr = 4;
+
+            for (short j = 0; j < this.maxcolSize - 1; ++j)
+            {
+                for (short i = temp2; i <= temp; i += incr)
+                {
+                    if (tileValues[i] == BoxState.cross)
+                    {
+                        ++count;
+                    }
+
+                    else
+                    {
+                        Aival = i;
+                    }
+                }
+
+                if (count == 2)
+                    break;
+
+                count = 0;
+                temp -= 2;
+                temp2 += 2;
+                incr -= 2;
+            }
+
+            if (count == 2 && Aival != null) return (short)Aival;
+            #endregion
+
+            return null;
         }
 
         #endregion
-
     }
+
+
+
+
 
 }
